@@ -11,35 +11,22 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import crayons
 import logging
-import sys
-
-import gcpctl.cli.parser as app_parser
 
 LOG = logging.getLogger(__name__)
 
 
-def setup_logging(debug):
-    """Sets the logging."""
-    format = '%(message)s'
-    level = logging.DEBUG if debug else logging.INFO
-    logging.basicConfig(level=level, format=format)
+def add_get_parser(subparsers):
+    """The parser for sub command 'list'."""
+    get_parser = subparsers.add_parser("get")
+    get_subparsers = get_parser.add_subparsers()
+    get_clusters_parser = get_subparsers.add_parser("clusters")
+    get_clusters_parser.set_defaults(func=get_clusters_main)
+    get_clusters_parser.add_argument('-e', '--env-type',
+                                     dest="env_type", help='Environment type')
 
 
-def set_logging_level(module, level):
-    logging.getLogger(module).setLevel(level)
-
-
-def main():
-    """Main Entry."""
-    # Parse arguments provided by the user
-    parser = app_parser.create_parser()
-    args = parser.parse_args()
-    setup_logging(args.debug)
-
-    if hasattr(args, 'func'):
-        args.func(args)
-
-
-if __name__ == '__main__':
-    sys.exit(main())
+def get_clusters_main(args):
+    """Get clusters main entry."""
+    LOG.info("Listing clusters...\n")
