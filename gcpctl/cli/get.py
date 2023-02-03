@@ -13,6 +13,8 @@
 #    under the License.
 import logging
 
+from gcpctl.folders.list import FolderLister
+
 LOG = logging.getLogger(__name__)
 
 
@@ -33,6 +35,13 @@ def add_get_parser(subparsers):
     get_projects_parser.add_argument('-e', '--env-type',
                                      dest="env_type", help='Environment type')
 
+    # Folders
+    get_folders_parser = get_subparsers.add_parser("folders")
+    get_folders_parser.set_defaults(func=get_folders_main)
+    get_folders_parser.add_argument('-i', '--folder-id',
+                                    dest="folder_id", help='Folder ID',
+                                    required=True)
+
 
 def get_clusters_main(args):
     """Get clusters main entry."""
@@ -42,3 +51,8 @@ def get_clusters_main(args):
 def get_projects_main(args):
     """Get projects main entry."""
     LOG.info("Listing projects...\n")
+
+
+def get_folders_main(args):
+    folder_lister = FolderLister(folder_id=args.folder_id)
+    folder_lister.list()

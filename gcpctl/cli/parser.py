@@ -14,7 +14,6 @@
 import argparse
 
 import gcpctl.cli.get as get_parser
-import gcpctl.cli.pod_exec as pod_exec_parser
 
 
 def create_parser():
@@ -28,6 +27,5 @@ def create_parser():
                         dest="debug", help='Turn on debug')
 
     get_parser.add_get_parser(subparsers)
-    # pod_exec_parser.add_pod_exec_parser(subparsers)
 
     return parser

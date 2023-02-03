@@ -13,13 +13,18 @@
 #    under the License.
 from google.cloud import resourcemanager_v3
 
+from gcpctl.folders.manager import FolderManager
 
-class FolderLister(object):
 
-    def __init__(self) -> None:
-        self.client = resourcemanager_v3.FoldersClient()
+class FolderLister(FolderManager):
+
+    def __init__(self, folder_id) -> None:
+        super().__init__()
+        self.folder_id = folder_id
 
     def list(self):
         """List folders."""
-        request = resourcemanager_v3.ListFoldersRequest()
-        self.client.list_folders(request=request)
+        request = resourcemanager_v3.ListFoldersRequest(
+            parent=f"folders/{self.folder_id}")
+        for folder in self.client.list_folders(request=request):
+            print(folder.display_name)
