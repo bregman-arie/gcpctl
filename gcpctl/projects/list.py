@@ -11,3 +11,18 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+from google.cloud import resourcemanager_v3
+
+from gcpctl.projects.manager import ProjectManager
+
+
+class ProjectLister(ProjectManager):
+
+    def __init__(self) -> None:
+        super().__init__()
+
+    def list(self):
+        """List projects."""
+        request = resourcemanager_v3.ListProjectsRequest()
+        for project in self.client.list_projects(request=request):
+            print(project.display_name)

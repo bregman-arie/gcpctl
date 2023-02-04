@@ -14,6 +14,7 @@
 import logging
 import sys
 
+from gcpctl.config import AppConfig
 import gcpctl.cli.parser as app_parser
 
 LOG = logging.getLogger(__name__)
@@ -37,8 +38,10 @@ def main():
     args = parser.parse_args()
     setup_logging(args.debug)
 
+    config = AppConfig()
+
     if hasattr(args, 'func'):
-        args.func(args)
+        args.func(args, **config)
 
 
 if __name__ == '__main__':
