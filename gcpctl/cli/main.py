@@ -11,13 +11,30 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import argparse
 import logging
 import sys
 
 from gcpctl.config import AppConfig
-import gcpctl.cli.parser as app_parser
+import gcpctl.cli.get as get_parser
 
 LOG = logging.getLogger(__name__)
+
+
+def create_parser():
+    """Returns argument parser"""
+
+    # Top level parser
+    parser = argparse.ArgumentParser()
+    parser.set_defaults(parser=parser)
+    subparsers = parser.add_subparsers(dest='main_subparser')
+
+    parser.add_argument('--debug', '-d', action='store_true',
+                        dest="debug", help='Turn on debug')
+
+    get_parser.add_get_parser(subparsers)
+
+    return parser
 
 
 def setup_logging(debug):
@@ -34,14 +51,17 @@ def set_logging_level(module, level):
 def main():
     """Main Entry."""
     # Parse arguments provided by the user
-    parser = app_parser.create_parser()
+    parser = create_parser()
     args = parser.parse_args()
     setup_logging(args.debug)
 
     config = AppConfig()
+    config.load()
 
-    if hasattr(args, 'func'):
-        args.func(args, **config)
+    try:
+        args.func(args, config)
+    except AttributeError:
+        print(args.parser.print_help())
 
 
 if __name__ == '__main__':

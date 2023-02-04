@@ -22,23 +22,27 @@ LOG = logging.getLogger(__name__)
 def add_get_parser(subparsers):
     """The parser for sub command 'list'."""
     get_parser = subparsers.add_parser("get")
-    get_subparsers = get_parser.add_subparsers()
+    get_parser.set_defaults(parser=get_parser)
+    get_subparsers = get_parser.add_subparsers(dest='get_subparser')
 
     # Clusters
     get_clusters_parser = get_subparsers.add_parser("clusters")
-    get_clusters_parser.set_defaults(func=get_clusters_main)
+    get_clusters_parser.set_defaults(func=get_clusters_main,
+                                     parser=get_clusters_parser)
     get_clusters_parser.add_argument('-e', '--env-type',
                                      dest="env_type", help='Environment type')
 
     # Projects
     get_projects_parser = get_subparsers.add_parser("projects")
-    get_projects_parser.set_defaults(func=get_projects_main)
+    get_projects_parser.set_defaults(func=get_projects_main,
+                                     parser=get_projects_parser)
     get_projects_parser.add_argument('-f', '--folder-id',
                                      dest="folder_id", help='Folder ID')
 
     # Folders
     get_folders_parser = get_subparsers.add_parser("folders")
-    get_folders_parser.set_defaults(func=get_folders_main)
+    get_folders_parser.set_defaults(func=get_folders_main,
+                                    parser=get_folders_parser)
     get_folders_parser.add_argument('-f', '--folder-id',
                                     dest="folder_id", help='Folder ID',
                                     required=True)

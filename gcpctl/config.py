@@ -21,7 +21,6 @@ import gcpctl.exceptions.config as conf_exc
 from gcpctl import __path__ as pwd
 from gcpctl.cli.utils import ask_yes_no_question
 from gcpctl.exceptions.cli import AbortedByUserError
-from gcpctl.exceptions.config import SchemaError
 from gcpctl.utils import yaml
 from gcpctl.utils.files import get_first_available_file, is_file_available
 from gcpctl.utils.fs import File, cd
@@ -65,24 +64,13 @@ class Config(UserDict):
 class AppConfig(Config):
     """Representation of a Cybil's configuration file"""
 
-    def __init__(
-        self,
-        data: Optional[dict] = None,
-        schema: File = File('_data/schemas/config.json')
-    ):
+    def __init__(self, data: Optional[dict] = None):
         super().__init__(data)
-
-        self._schema = schema
 
     @property
     def environments(self) -> dict:
         """dict: environments section from the configuration data."""
         return self.data.get('environments', {})
-
-    @property
-    def plugins(self) -> list:
-        """dict: plugins section from the configuration data."""
-        return self.data.get('plugins', [])
 
     def load(self, path: str = None) -> None:
         """Loads the content of a configuration file/object and creates
@@ -101,30 +89,10 @@ class AppConfig(Config):
         :raise MissingEnvironments: If no environments specified
         """
         self._verify_by_hand()
-        self._verify_by_schema()
 
     def _verify_by_hand(self) -> None:
         self._verify_environments()
         self._verify_systems()
-
-    def _verify_environments(self) -> None:
-        """Checks whether the environments section in the configuration
-        is valid.
-        :raise MissingSystems: If a specific environment section is empty
-        :raise MissingEnvironments: If no environments specified
-        """
-        if isinstance(self.environments, str):
-            raise conf_exc.MissingSystems(self.environments)
-        if not self.environments:
-            raise conf_exc.MissingEnvironments()
-
-    def _verify_by_schema(self):
-        with cd(pwd[0]):
-            validators = Draft7ValidatorFactory()
-            validator = validators.from_file(self._schema)
-
-            if not validator.is_valid(self.data):
-                raise SchemaError(error="Invalid configuration file.")
 
 
 class ConfigFactory:
