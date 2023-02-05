@@ -1,3 +1,4 @@
+"""URL-related utils."""
 # Copyright 2023 Arie Bregman
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -36,14 +37,6 @@ class URL(str):
             raise ValueError(msg)
 
         return super().__new__(cls, value)
-
-
-def is_git(url: URL) -> bool:
-    """
-    :param url: The URL to test.
-    :return: True if the URL points to a git repository, False if not.
-    """
-    return True
 
 
 def is_github(url: URL) -> bool:

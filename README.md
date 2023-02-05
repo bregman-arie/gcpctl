@@ -29,6 +29,7 @@ environments:
 
 ### Folders
 
+* List folders: `gcpctl get folders`
 * List folders under a given a folder: `gcpctl get folders -i <FOLDER_ID>`
 
 ### Projects

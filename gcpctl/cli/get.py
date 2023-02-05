@@ -1,3 +1,4 @@
+"""app get sub-command parser and entry points"""
 # Copyright 2023 Arie Bregman
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -13,9 +14,11 @@
 #    under the License.
 import logging
 
-from gcpctl.folders.list import FolderLister
-from gcpctl.projects.list import ProjectLister
-from gcpctl.utils.colors import bcolors
+from gcpctl.config import Config
+from gcpctl.folders.manager import FolderManager
+from gcpctl.projects.manager import ProjectManager
+from gcpctl.gke_clusters.manager import GKEManager
+from gcpctl.utils.colors import BCOLORS
 
 LOG = logging.getLogger(__name__)
 
@@ -54,29 +57,33 @@ def add_get_parser(subparsers):
                                     required=True)
 
 
-def get_gke_clusters_main(args, config):
+def get_gke_clusters_main(args):
     """Get GKE clusters main entry."""
-    pass
+    gke_manager = GKEManager(project_id=args.project_id)
+    gke_manager.list()
 
 
-def get_projects_main(args, config):
+def get_projects_main(args):
     """Get projects main entry."""
-    projects_lister = ProjectLister()
+    config = Config()
+    config.load()
+
+    projects_lister = ProjectManager()
     if args.env_type:
         for env_type in args.env_type:
-            for folder in config['environments'][env_type]:
-                LOG.info(f"{bcolors.YELLOW}Listing projects from \
-{env_type} environment{bcolors.ENDC}\n")
+            for folder in config.data.get('environments').get(env_type):
+                LOG.info("%sListing projects from %s environment%s\n",
+                         BCOLORS['YELLOW'], env_type, BCOLORS['ENDC'])
                 projects_lister.list(folder_id=folder)
     if args.folder_id:
-        LOG.info(f"{bcolors.YELLOW}Listing projects from \
-{args.folder_id} folder{bcolors.ENDC}\n")
+        LOG.info("%sListing projects from %s folder%s\n",
+                 BCOLORS['YELLOW'], args.folder_id, BCOLORS['ENDC'])
         projects_lister.list(folder_id=args.folder_id)
     if not args.folder_id and not args.env_type:
         projects_lister.list()
 
 
-def get_folders_main(args, config):
+def get_folders_main(args):
     """Get folders main entry."""
-    folder_lister = FolderLister(folder_id=args.folder_id)
+    folder_lister = FolderManager(folder_id=args.folder_id)
     folder_lister.list()

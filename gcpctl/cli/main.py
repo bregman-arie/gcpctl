@@ -1,3 +1,4 @@
+"""Main CLI entry"""
 # Copyright 2023 Arie Bregman
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -15,7 +16,6 @@ import argparse
 import logging
 import sys
 
-from gcpctl.config import AppConfig
 import gcpctl.cli.get as get_parser
 
 LOG = logging.getLogger(__name__)
@@ -39,12 +39,13 @@ def create_parser():
 
 def setup_logging(debug):
     """Sets the logging."""
-    format = '%(message)s'
+    logging_format = '%(message)s'
     level = logging.DEBUG if debug else logging.INFO
-    logging.basicConfig(level=level, format=format)
+    logging.basicConfig(level=level, format=logging_format)
 
 
 def set_logging_level(module, level):
+    """Sets logging level (DEBUG, INFO, etc.)"""
     logging.getLogger(module).setLevel(level)
 
 
@@ -55,11 +56,8 @@ def main():
     args = parser.parse_args()
     setup_logging(args.debug)
 
-    config = AppConfig()
-    config.load()
-
     if hasattr(args, 'func'):
-        args.func(args, config)
+        args.func(args)
     else:
         args.parser.print_help()
 

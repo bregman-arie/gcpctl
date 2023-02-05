@@ -1,3 +1,4 @@
+"""Config-related exceptions."""
 # Copyright 2023 Arie Bregman
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -11,6 +12,8 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+from typing import Tuple, Union
+
 from gcpctl.exceptions import GcpctlException
 
 
@@ -19,11 +22,25 @@ CHECK_DOCS_MSG = f"Check the documentation at {CONFIG_DOCS_URL} \
 for more information"
 
 
-class SchemaError(GcpctlException):
-    def __init__(self, error: str):
-        super().__init__(
-            message=f'Configuration file found to be invalid due to error:\n'
-                    f'\t- {error}\n'
-                    f'\n'
-                    f'{CHECK_DOCS_MSG}'
-        )
+class ConfigurationNotFound(GcpctlException):
+    """Configuration file not found exception"""
+
+    def __init__(self, paths: Union[Tuple[str], str]):
+        if paths:
+            paths = f" at: '{paths}'"
+        else:
+            paths = ""
+        self.message = f"""Could not find configuration file{paths}.
+{CHECK_DOCS_MSG}"""
+
+        super().__init__(self.message)
+
+
+class EmptyConfiguration(GcpctlException):
+    """Configuration file is empty exception."""
+
+    def __init__(self, file: str):
+        self.message = f"""Configuration file {file} is empty.
+{CHECK_DOCS_MSG}"""
+
+        super().__init__(self.message)

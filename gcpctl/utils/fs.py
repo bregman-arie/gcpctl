@@ -1,3 +1,4 @@
+"""Filesystem-related utils."""
 # Copyright 2023 Arie Bregman
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -20,7 +21,6 @@ from typing import Generator, Union
 
 from overrides import overrides
 
-from gcpctl import __path__ as pwd
 from gcpctl.utils.paths import Preprocessor
 
 RawPath = Union[bytes, str, PathLike, Path]
@@ -92,7 +92,7 @@ class Dir(FSPath):
 
         return not any(self.as_path().iterdir())
 
-    def cd(self, path: RawPath) -> 'Dir':
+    def change_directory(self, path: RawPath) -> 'Dir':
         """Combines this path with the one passed as an argument. Useful to
         represent subdirectories.
         :param path: The path to append.
@@ -110,7 +110,7 @@ class Dir(FSPath):
         """
         self.as_path().mkdir(parents=recursive, exist_ok=True)
 
-    def rm(self) -> None:
+    def remove_directory(self) -> None:
         """Deletes the directory and all its contents. Does nothing if the
         directory does not exist.
         """
@@ -183,14 +183,8 @@ class File(FSPath):
             return file.read()
 
 
-class KnownDirs:
-    """Preset of directories used by gcpctl."""
-    GCPCTL = Dir(pwd[0])
-    """gcpctl's main module directory."""
-
-
 @contextmanager
-def cd(path: RawPath) -> Generator:
+def change_directory(path: RawPath) -> Generator:
     """Simple context manager that changes the working directory and restores
     the previous one on exit.
     """

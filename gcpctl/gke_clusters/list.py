@@ -1,4 +1,3 @@
-"""CLI related utils."""
 # Copyright 2023 Arie Bregman
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -12,22 +11,3 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-
-
-def ask_yes_no_question(question: str) -> bool:
-    """Prints a question on the CLI that the user must respond
-    with a yes or no.
-    :param question: Text of the question. Include question mark on it.
-    :return: Whether the user said 'y' (True) or 'n' (False).
-    """
-    answer = ''
-
-    while answer not in ('y', 'n'):
-        print(f'{question} [y/n](n):')
-
-        answer = input()
-
-        if not answer:
-            answer = 'n'
-
-    return answer == 'y'

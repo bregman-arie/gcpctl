@@ -1,3 +1,4 @@
+"""Fixed colors to be used across the app modules"""
 # Copyright 2023 Arie Bregman
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -13,14 +14,14 @@
 #    under the License.
 
 
-class bcolors:
-
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
+BCOLORS = {
+    'HEADER': '\033[95m',
+    'OKBLUE': '\033[94m',
+    'OKCYAN': '\033[96m',
+    'OKGREEN': '\033[92m',
+    'YELLOW': '\033[93m',
+    'FAIL': '\033[91m',
+    'ENDC': '\033[0m',
+    'BOLD': '\033[1m',
+    'UNDERLINE': '\033[4m'
+}

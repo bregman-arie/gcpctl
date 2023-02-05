@@ -1,3 +1,4 @@
+"""app configuration-related classes and functions"""
 # Copyright 2023 Arie Bregman
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -14,7 +15,7 @@
 import logging
 import os
 from collections import UserDict
-from typing import Callable, Optional
+from typing import Callable
 import rfc3987
 
 import gcpctl.exceptions.config as conf_exc
@@ -41,33 +42,24 @@ def _ask_user_for_overwrite() -> bool:
     return ask_yes_no_question('Overwrite file?')
 
 
-class Config(UserDict):
+class Config():
     """Representation of a generic configuration file. Even though it starts
     without any contents, this dictionary can be filled in with the data
     from an external yaml file. No post-processing is performed on the read
     data, as this class acts as a direct interface between the system's file
     and the app.
     """
+    DEFAULT_USER_PATH = os.path.join(
+        os.path.expanduser('~'), USER_CONF_PATH
+    )
 
-    def load_from_path(self, path: str) -> None:
-        """Loads the content of a configuration file/object and creates
-        a reference to environments."""
-        if path:
-            self.data = ConfigFactory.from_path(path)
-        else:
-            self.data = ConfigFactory.from_search()
+    DEFAULT_FILE_PATHS = (
+        DEFAULT_USER_PATH,
+        SYSTEM_CONF_PATH
+    )
 
-
-class AppConfig(Config):
-    """Representation of a Cybil's configuration file"""
-
-    def __init__(self, data: Optional[dict] = None):
-        super().__init__(data)
-
-    @property
-    def environments(self) -> dict:
-        """dict: environments section from the configuration data."""
-        return self.data.get('environments', {})
+    def __init__(self, data=None):
+        self.data = UserDict(data)
 
     def load(self, path: str = None) -> None:
         """Loads the content of a configuration file/object and creates
@@ -77,40 +69,10 @@ class AppConfig(Config):
         :raise ConfigurationNotFound: If no definition could be retrieved.
         :raise EmptyConfiguration: If configuration file is empty.
         """
-        super().load_from_path(path)
-
-    def verify(self) -> None:
-        """Verifies the configuration content by the context of the
-        application (using concepts like environments, systems and sources.
-        :raise MissingSystems: If a specific environment section is empty
-        :raise MissingEnvironments: If no environments specified
-        """
-        self._verify_by_hand()
-
-    def _verify_by_hand(self) -> None:
-        self._verify_environments()
-        self._verify_systems()
-
-
-class ConfigFactory:
-    """Factory that generates already loaded configurations from different
-    sources.
-    """
-
-    DEFAULT_USER_PATH = os.path.join(
-        os.path.expanduser('~'), USER_CONF_PATH
-    )
-    """Default location on the user's filesystem where the configuration
-    file is expected.
-    """
-
-    DEFAULT_FILE_PATHS = (
-        DEFAULT_USER_PATH,
-        SYSTEM_CONF_PATH
-    )
-    """List of locations where the configuration should be by defaults.
-    Ordered from user scope to system scope.
-    """
+        if path:
+            self.data = Config.from_path(path)
+        else:
+            self.data = Config.from_search()
 
     @staticmethod
     def from_path(path: str) -> dict:
@@ -123,12 +85,12 @@ class ConfigFactory:
         :raise EmptyConfiguration: If configuration file is empty.
         """
         if not path:
-            return ConfigFactory.from_search()
+            return Config.from_search()
 
         if rfc3987.match(path, 'URI'):
-            return ConfigFactory.from_url(path)
+            return Config.from_url(path)
 
-        return ConfigFactory.from_file(path)
+        return Config.from_file(path)
 
     @staticmethod
     def from_file(file: str) -> dict:
@@ -155,19 +117,18 @@ class ConfigFactory:
         :return: The configuration instance
         :raise ConfigurationNotFound: If no definition could be found.
         """
-        paths = ConfigFactory.DEFAULT_FILE_PATHS
+        paths = Config.DEFAULT_FILE_PATHS
         file = get_first_available_file(paths)
 
         if not file:
             raise conf_exc.ConfigurationNotFound(paths)
 
-        return ConfigFactory.from_file(file)
+        return Config.from_file(file)
 
     @staticmethod
-    def from_url(
-        url: str, dest: str = DEFAULT_USER_PATH,
-        overwrite_call: Callable[[], bool] = _ask_user_for_overwrite
-    ) -> dict:
+    def from_url(url: str,
+                 dest: str = DEFAULT_USER_PATH, overwrite_call: Callable[
+                     [], bool] = _ask_user_for_overwrite) -> dict:
         """Builds a configuration from a definition located on a remote
         host. The definition is accessed and downloaded into the provided path.
         Supported protocols are defined by
@@ -179,7 +140,7 @@ class ConfigFactory:
         interaction with the CLI and therefore is a blocker.
         Examples
         --------
-        >>> ConfigFactory.from_url(
+        >>> Config.from_url(
                 'http://localhost/my-file.yaml', '/var/gcpctl/gcpctl.yaml'
             )
         :param url: The URL where the file is located at.
@@ -214,4 +175,4 @@ class ConfigFactory:
 
         LOG.info('Download completed successfully.')
 
-        return ConfigFactory.from_file(dest)
+        return Config.from_file(dest)

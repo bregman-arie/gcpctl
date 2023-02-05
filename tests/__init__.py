@@ -11,20 +11,3 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from google.cloud import resourcemanager_v3
-
-from gcpctl.folders.manager import FolderManager
-
-
-class FolderLister(FolderManager):
-
-    def __init__(self, folder_id) -> None:
-        super().__init__()
-        self.folder_id = folder_id
-
-    def list(self):
-        """List folders."""
-        request = resourcemanager_v3.ListFoldersRequest(
-            parent=f"folders/{self.folder_id}")
-        for folder in self.client.list_folders(request=request):
-            print(folder.display_name)
