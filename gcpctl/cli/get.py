@@ -26,12 +26,14 @@ def add_get_parser(subparsers):
     get_parser.set_defaults(parser=get_parser)
     get_subparsers = get_parser.add_subparsers(dest='get_subparser')
 
-    # Clusters
-    get_clusters_parser = get_subparsers.add_parser("clusters")
-    get_clusters_parser.set_defaults(func=get_clusters_main,
-                                     parser=get_clusters_parser)
-    get_clusters_parser.add_argument('-e', '--env-type',
-                                     dest="env_type", help='Environment type')
+    # GKE Clusters
+    get_gke_clusters_parser = get_subparsers.add_parser("gke-clusters")
+    get_gke_clusters_parser.set_defaults(
+        func=get_gke_clusters_main, parser=get_gke_clusters_parser)
+    get_gke_clusters_parser.add_argument('-p', '--project', dest="project")
+    get_gke_clusters_parser.add_argument('-e', '--env-type', nargs='+',
+                                         dest="env_type",
+                                         help='Env name from config file')
 
     # Projects
     get_projects_parser = get_subparsers.add_parser("projects")
@@ -52,9 +54,9 @@ def add_get_parser(subparsers):
                                     required=True)
 
 
-def get_clusters_main(args, config):
-    """Get clusters main entry."""
-    LOG.info("Listing clusters...\n")
+def get_gke_clusters_main(args, config):
+    """Get GKE clusters main entry."""
+    pass
 
 
 def get_projects_main(args, config):
