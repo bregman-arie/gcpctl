@@ -148,15 +148,6 @@ class JSONValidatorFactory(ABC):
 
         self._caches = caches
 
-    @property
-    def caches(self) -> Caches:
-        """
-        :return:
-            Caches used by the class to avoid fetching external resources
-            more than needed.
-        """
-        return self._caches
-
     @abstractmethod
     def from_buffer(self, buffer: Union[bytes, str]) -> JSONValidator:
         """Builds a new validator from a data stream.

@@ -18,13 +18,10 @@ from typing import Callable, Optional
 import rfc3987
 
 import gcpctl.exceptions.config as conf_exc
-from gcpctl import __path__ as pwd
 from gcpctl.cli.utils import ask_yes_no_question
 from gcpctl.exceptions.cli import AbortedByUserError
 from gcpctl.utils import yaml
 from gcpctl.utils.files import get_first_available_file, is_file_available
-from gcpctl.utils.fs import File, cd
-from gcpctl.utils.json import Draft7ValidatorFactory
 from gcpctl.utils.net import DownloadError, download_file
 
 

@@ -58,10 +58,10 @@ def main():
     config = AppConfig()
     config.load()
 
-    try:
+    if hasattr(args, 'func'):
         args.func(args, config)
-    except AttributeError:
-        print(args.parser.print_help())
+    else:
+        args.parser.print_help()
 
 
 if __name__ == '__main__':

@@ -13,20 +13,14 @@
 #    under the License.
 
 
-def ask_yes_no_question(question: str) -> bool:
-    """Prints a question on the CLI that the user must respond
-    with a yes or no.
-    :param question: Text of the question. Include question mark on it.
-    :return: Whether the user said 'y' (True) or 'n' (False).
-    """
-    answer = ''
+class bcolors:
 
-    while answer not in ('y', 'n'):
-        print(f'{question} [y/n](n):')
-
-        answer = input()
-
-        if not answer:
-            answer = 'n'
-
-    return (answer == 'y')
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
