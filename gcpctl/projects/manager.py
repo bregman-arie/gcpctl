@@ -14,6 +14,8 @@
 #    under the License.
 import logging
 from google.cloud import resourcemanager_v3
+from google.api_core.exceptions import PermissionDenied
+import sys
 
 from gcpctl.manager import GCPManager
 from gcpctl.utils.colors import BCOLORS
@@ -31,15 +33,30 @@ class ProjectManager(GCPManager):
         super().__init__()
         self._load_conf()
 
-    def _list_call_and_print(self, folder_id=None):
+    def get_projects(self, folder_id=None):
         if folder_id:
-            LOG.info("%sListing projects from folder %s%s\n",
-                     BCOLORS['YELLOW'], folder_id, BCOLORS['ENDC'])
             request = resourcemanager_v3.ListProjectsRequest(
                 parent=f"folders/{folder_id}")
         else:
             request = resourcemanager_v3.ListProjectsRequest()
-        for project in self.client.list_projects(request=request):
+        try:
+            return [project.display_name for project in
+                    self.client.list_projects(request=request)]
+        except PermissionDenied:
+            if folder_id:
+                msg = "folder %s" % folder_id
+            else:
+                msg = "root project"
+            LOG.error("%sNo permissions to access %s%s",
+                      BCOLORS['RED'], msg, BCOLORS['ENDC'])
+            sys.exit(2)
+
+    @staticmethod
+    def print_projects(projects, source=None):
+        if source:
+            LOG.info("%sListing projects from %s%s\n",
+                     BCOLORS['YELLOW'], source, BCOLORS['ENDC'])
+        for project in projects:
             print(project.display_name)
         print()
 
@@ -47,14 +64,16 @@ class ProjectManager(GCPManager):
         """List projects."""
         if self.folder_ids:
             for folder_id in self.folder_ids:
-                self._list_call_and_print(folder_id)
+                ProjectManager.print_projects(self.get_projects(folder_id),
+                                              source="folder " + folder_id)
         if self.env_types:
             for env_type in self.env_types:
                 for folder_id in \
                         self.config.data.get('environments').get(env_type):
-                    self._list_call_and_print(folder_id)
+                    ProjectManager.print_projects(self.get_projects(folder_id),
+                                                  source="env " + env_type)
         if not self.env_types and not self.folder_ids:
-            self._list_call_and_print()
+            ProjectManager.print_projects(self.get_projects())
 
     def create(self):
         """Creates a new GCP project."""

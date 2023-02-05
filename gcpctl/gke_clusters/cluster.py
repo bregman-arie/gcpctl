@@ -22,3 +22,6 @@ class GKECluster():
     name: str
     project_id: str
     zone: str
+
+    def __str__(self):
+        return f"{self.name},  {self.project_id},   {self.zone}"

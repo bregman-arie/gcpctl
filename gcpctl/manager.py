@@ -1,4 +1,4 @@
-"""Fixed colors to be used across the app modules"""
+"""GCP general manager used by other modules."""
 # Copyright 2023 Arie Bregman
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -12,16 +12,23 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import logging
+
+from gcpctl.config import Config
+
+LOG = logging.getLogger(__name__)
 
 
-BCOLORS = {
-    'HEADER': '\033[95m',
-    'OKBLUE': '\033[94m',
-    'OKCYAN': '\033[96m',
-    'OKGREEN': '\033[92m',
-    'YELLOW': '\033[93m',
-    'RED': '\033[91m',
-    'ENDC': '\033[0m',
-    'BOLD': '\033[1m',
-    'UNDERLINE': '\033[4m'
-}
+class GCPManager():
+    """Represents GCP manager for generic operations
+    shared by multiple managers."""
+
+    def __init__(self, config=None):
+        self.config = config
+
+    def _load_conf(self):
+        if not self.config:
+            self.config = Config()
+            self.config.load()
+        else:
+            LOG.warning("Config already loaded...")
