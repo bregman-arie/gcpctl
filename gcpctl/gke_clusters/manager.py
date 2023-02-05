@@ -23,7 +23,7 @@ LOG = logging.getLogger(__name__)
 class GKEManager():
     """Execute GCP GKE related operations."""
 
-    def __init__(self, project_id=None) -> None:
+    def __init__(self, project_id) -> None:
         self.client = container_v1.ClusterManagerClient()
         self.project_id = project_id
 

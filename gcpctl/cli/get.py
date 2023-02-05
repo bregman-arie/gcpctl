@@ -14,11 +14,9 @@
 #    under the License.
 import logging
 
-from gcpctl.config import Config
 from gcpctl.folders.manager import FolderManager
 from gcpctl.projects.manager import ProjectManager
 from gcpctl.gke_clusters.manager import GKEManager
-from gcpctl.utils.colors import BCOLORS
 
 LOG = logging.getLogger(__name__)
 
@@ -33,7 +31,7 @@ def add_get_parser(subparsers):
     get_gke_clusters_parser = get_subparsers.add_parser("gke-clusters")
     get_gke_clusters_parser.set_defaults(
         func=get_gke_clusters_main, parser=get_gke_clusters_parser)
-    get_gke_clusters_parser.add_argument('-p', '--project', dest="project")
+    get_gke_clusters_parser.add_argument('-p', '--project', dest="project_id")
     get_gke_clusters_parser.add_argument('-e', '--env-type', nargs='+',
                                          dest="env_type",
                                          help='Env name from config file')
@@ -45,7 +43,7 @@ def add_get_parser(subparsers):
     get_projects_parser.add_argument('-e', '--env-type', nargs='+',
                                      dest="env_type",
                                      help='Env name from config file')
-    get_projects_parser.add_argument('-f', '--folder-id',
+    get_projects_parser.add_argument('-f', '--folder-id', nargs='+',
                                      dest="folder_id", help='Folder ID')
 
     # Folders
@@ -65,22 +63,9 @@ def get_gke_clusters_main(args):
 
 def get_projects_main(args):
     """Get projects main entry."""
-    config = Config()
-    config.load()
-
-    projects_lister = ProjectManager()
-    if args.env_type:
-        for env_type in args.env_type:
-            for folder in config.data.get('environments').get(env_type):
-                LOG.info("%sListing projects from %s environment%s\n",
-                         BCOLORS['YELLOW'], env_type, BCOLORS['ENDC'])
-                projects_lister.list(folder_id=folder)
-    if args.folder_id:
-        LOG.info("%sListing projects from %s folder%s\n",
-                 BCOLORS['YELLOW'], args.folder_id, BCOLORS['ENDC'])
-        projects_lister.list(folder_id=args.folder_id)
-    if not args.folder_id and not args.env_type:
-        projects_lister.list()
+    projects_lister = ProjectManager(env_types=args.env_type,
+                                     folder_ids=args.folder_id)
+    projects_lister.list()
 
 
 def get_folders_main(args):

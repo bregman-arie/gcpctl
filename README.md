@@ -1,6 +1,6 @@
 # GCPctl
 
-Work In Progress
+Google Cloud Platform (GCP) utils
 
 ## Installation
 
@@ -11,8 +11,8 @@ pip install .
 
 ## Configuration
 
-gcpctl can be used with or without a configuration file.
-A configuration file can be used to set up environments. You can think about them as aliases for folders:
+A configuration file is optional and can enhance part of your user experience with GCP.
+Right now the only thing it support is "environments" - think of those as aliases for certain folders.
 
 ```
 environments:
@@ -35,7 +35,11 @@ environments:
 ### Projects
 
 * List projects: `gcpctl get projects`
-* List projects from prod environment: `gcpctl get projects -e prod` (see configuration section for more information on environments)
+* List projects from prod environment: `gcpctl get projects -e prod` (see configuration section for more info)
 * List projects from prod and dev environments: `gcpctl get projects -e prod dev`
 * List projects from a specific folder: `gpctl get projects -f 19282017912`
 * List projects from prod environment and a specific folder: `gcpctl get projects -e prod -f 19282017912`
+
+### GKE Clusters
+
+* List clusters from a specific env: `gcpctl get gke-clusters -e prod` (see configuration section for more info)

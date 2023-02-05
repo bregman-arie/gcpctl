@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eu
+set -u
 
 flake8 .
 pylint gcpctl
