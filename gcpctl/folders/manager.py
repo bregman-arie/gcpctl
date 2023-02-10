@@ -18,19 +18,22 @@ from google.cloud import resourcemanager_v3
 class FolderManager():
     """Manages operations related to GCP folders."""
 
-    def __init__(self, folder_id=None) -> None:
+    def __init__(self, folder_ids=None) -> None:
         self.client = resourcemanager_v3.FoldersClient()
-        self.folder_id = folder_id
+        self.folder_ids = folder_ids
 
     def list(self):
         """List folders."""
-        if self.folder_id:
-            request = resourcemanager_v3.ListFoldersRequest(
-                parent=f"folders/{self.folder_id}")
+        if self.folder_ids:
+            for folder_id in self.folder_ids:
+                request = resourcemanager_v3.ListFoldersRequest(
+                    parent=f"folders/{folder_id}")
+                for folder in self.client.list_folders(request=request):
+                    print(folder.display_name)
         else:
             request = resourcemanager_v3.ListFoldersRequest()
-        for folder in self.client.list_folders(request=request):
-            print(folder.display_name)
+            for folder in self.client.list_folders(request=request):
+                print(folder.display_name)
 
     def create(self):
         """Creates new folder."""

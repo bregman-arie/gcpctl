@@ -27,12 +27,10 @@ LOG = logging.getLogger(__name__)
 class ProjectManager(GCPManager):
     """Manages GCP operations related to projects."""
 
-    def __init__(self, folder_ids=None, env_types=None) -> None:
+    def __init__(self, folder_ids=None) -> None:
         self.client = resourcemanager_v3.ProjectsClient()
         self.folder_ids = folder_ids
-        self.env_types = env_types
         super().__init__()
-        self._load_conf()
 
     def get_projects(self, folder_id=None):
         if folder_id:
@@ -56,22 +54,16 @@ class ProjectManager(GCPManager):
     def print_projects(projects):
         for project in projects:
             print(project.display_name)
+        print()
 
     def list(self):
         """List projects."""
         if self.folder_ids:
             for folder_id in self.folder_ids:
-                LOG.info("%sListing projects from %s folder\n",
+                LOG.info("%sListing projects from %s folder%s\n",
                          BCOLORS['YELLOW'], folder_id, BCOLORS['ENDC'])
                 ProjectManager.print_projects(self.get_projects(folder_id))
-        if self.env_types:
-            for env_type in self.env_types:
-                LOG.info("%sListing projects from %s env%s\n",
-                         BCOLORS['YELLOW'], env_type, BCOLORS['ENDC'])
-                for folder_id in \
-                        self.config.data.get('environments').get(env_type):
-                    ProjectManager.print_projects(self.get_projects(folder_id))
-        if not self.env_types and not self.folder_ids:
+        else:
             ProjectManager.print_projects(self.get_projects())
 
     def create(self):

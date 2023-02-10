@@ -14,6 +14,7 @@
 #    under the License.
 import logging
 
+from gcpctl.config import Config
 from gcpctl.folders.manager import FolderManager
 from gcpctl.projects.manager import ProjectManager
 from gcpctl.gke_clusters.manager import GKEManager
@@ -42,17 +43,19 @@ def add_get_parser(subparsers):
     get_projects_parser.set_defaults(func=get_projects_main,
                                      parser=get_projects_parser)
     get_projects_parser.add_argument('-e', '--env-type', nargs='+',
-                                     dest="env_type",
-                                     help='Env name from config file')
-    get_projects_parser.add_argument('-f', '--folder-id', nargs='+',
-                                     dest="folder_id", help='Folder ID')
+                                     dest="env_types",
+                                     help='Env names from config file')
+    get_projects_parser.add_argument('-f', '--folder-ids', nargs='+',
+                                     default=[],
+                                     dest="folder_ids", help='Folder IDs')
 
     # Folders
     get_folders_parser = get_subparsers.add_parser("folders")
     get_folders_parser.set_defaults(func=get_folders_main,
                                     parser=get_folders_parser)
-    get_folders_parser.add_argument('-f', '--folder-id',
-                                    dest="folder_id", help='Folder ID')
+    get_folders_parser.add_argument('-f', '--folder-ids', nargs='+',
+                                    default=[],
+                                    dest="folder_ids", help='Folder ID')
 
 
 def get_gke_clusters_main(args):
@@ -64,12 +67,12 @@ def get_gke_clusters_main(args):
 
 def get_projects_main(args):
     """Get projects main entry."""
-    projects_lister = ProjectManager(env_types=args.env_type,
-                                     folder_ids=args.folder_id)
-    projects_lister.list()
+    args.folder_ids.extend(Config.get_folder_ids(args.env_types))
+    projects_manager = ProjectManager(folder_ids=args.folder_ids)
+    projects_manager.list()
 
 
 def get_folders_main(args):
     """Get folders main entry."""
-    folder_lister = FolderManager(folder_id=args.folder_id)
-    folder_lister.list()
+    folder_manager = FolderManager(folder_ids=args.folder_ids)
+    folder_manager.list()

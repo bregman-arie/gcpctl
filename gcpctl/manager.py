@@ -25,10 +25,3 @@ class GCPManager():
 
     def __init__(self, config=None):
         self.config = config
-
-    def _load_conf(self):
-        if not self.config:
-            self.config = Config()
-            self.config.load()
-        else:
-            LOG.warning("Config already loaded...")

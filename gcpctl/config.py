@@ -181,10 +181,11 @@ class Config():
     def get_folder_ids(env_types):
         """Return folder IDs of a given environment type."""
         folder_ids = []
-        if args.env_types:
+        if env_types:
             config = Config()
             config.load()
-            for env_type in args.env_types:
+            for env_type in env_types:
                 folder_ids.extend(
-                    [folder for folder in config['environments'][env_type]])
+                    [folder for folder in
+                     config.data.get('environments').get(env_type)])
         return folder_ids

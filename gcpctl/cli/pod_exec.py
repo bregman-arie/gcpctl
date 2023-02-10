@@ -14,7 +14,7 @@
 #    under the License.
 import logging
 
-from gcpctl.config import get_folder_ids
+from gcpctl.config import Config
 from gcpctl.gke_clusters.manager import GKEManager
 
 LOG = logging.getLogger(__name__)
@@ -35,7 +35,7 @@ def add_pod_exec_parser(subparsers):
 
 def pod_exec_main(args):
     """Main entry for sub-command pod-exec."""
-    folder_ids = get_folder_ids(args.env_types)
+    folder_ids = Config.get_folder_ids(args.env_types)
     gke_manager = GKEManager(folder_ids=folder_ids,
                              env_types=args.env_types, clusters=args.clusters)
     gke_manager.pod_exec(commands=args.commands, pods=args.pods,
