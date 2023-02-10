@@ -13,9 +13,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import logging
+import sys
+
 from google.cloud import resourcemanager_v3
 from google.api_core.exceptions import PermissionDenied
-import sys
 
 from gcpctl.manager import GCPManager
 from gcpctl.utils.colors import BCOLORS
@@ -40,7 +41,7 @@ class ProjectManager(GCPManager):
         else:
             request = resourcemanager_v3.ListProjectsRequest()
         try:
-            return [project.display_name for project in
+            return [project for project in
                     self.client.list_projects(request=request)]
         except PermissionDenied:
             if folder_id:
@@ -52,26 +53,24 @@ class ProjectManager(GCPManager):
             sys.exit(2)
 
     @staticmethod
-    def print_projects(projects, source=None):
-        if source:
-            LOG.info("%sListing projects from %s%s\n",
-                     BCOLORS['YELLOW'], source, BCOLORS['ENDC'])
+    def print_projects(projects):
         for project in projects:
             print(project.display_name)
-        print()
 
     def list(self):
         """List projects."""
         if self.folder_ids:
             for folder_id in self.folder_ids:
-                ProjectManager.print_projects(self.get_projects(folder_id),
-                                              source="folder " + folder_id)
+                LOG.info("%sListing projects from %s folder\n",
+                         BCOLORS['YELLOW'], folder_id, BCOLORS['ENDC'])
+                ProjectManager.print_projects(self.get_projects(folder_id))
         if self.env_types:
             for env_type in self.env_types:
+                LOG.info("%sListing projects from %s env%s\n",
+                         BCOLORS['YELLOW'], env_type, BCOLORS['ENDC'])
                 for folder_id in \
                         self.config.data.get('environments').get(env_type):
-                    ProjectManager.print_projects(self.get_projects(folder_id),
-                                                  source="env " + env_type)
+                    ProjectManager.print_projects(self.get_projects(folder_id))
         if not self.env_types and not self.folder_ids:
             ProjectManager.print_projects(self.get_projects())
 

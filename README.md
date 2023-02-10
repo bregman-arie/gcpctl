@@ -25,6 +25,8 @@ environments:
     - 192911991212
 ```
 
+You can then reference those environments with some of the commands, like: `gcpctl get projects -e prod`
+
 ## Usage
 
 ### Folders
@@ -35,11 +37,13 @@ environments:
 ### Projects
 
 * List projects: `gcpctl get projects`
-* List projects from prod environment: `gcpctl get projects -e prod` (see configuration section for more info)
+* List projects from prod environment: `gcpctl get projects -e prod` (see configuration section for more info on envs)
 * List projects from prod and dev environments: `gcpctl get projects -e prod dev`
 * List projects from a specific folder: `gpctl get projects -f 19282017912`
 * List projects from prod environment and a specific folder: `gcpctl get projects -e prod -f 19282017912`
 
 ### GKE Clusters
 
-* List clusters from a specific env: `gcpctl get gke-clusters -e prod` (see configuration section for more info)
+* List clusters from a specific env: `gcpctl get gke-clusters -e prod` (see configuration section for more info on envs)
+* Execute `kubectl get pods` on every "test" GKE cluster: `gcpctl cluster-exec --commands "kubectl get pods"`
+* Execute ls on Pods called "some-pod" in all prod clusters: `gcpctl pod-exec --pods some-pod --commands ls`

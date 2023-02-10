@@ -1,4 +1,3 @@
-"""GKE Cluster Class."""
 # Copyright 2023 Arie Bregman
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -12,16 +11,3 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from dataclasses import dataclass
-
-
-@dataclass
-class GKECluster():
-    """Represents GCP GKE cluster."""
-
-    name: str
-    project_id: str
-    zone: str
-
-    def __str__(self):
-        return (f"{self.name: <20} {self.project_id: <30} {self.zone: <40}")

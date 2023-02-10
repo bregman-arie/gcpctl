@@ -17,6 +17,8 @@ import logging
 import sys
 
 import gcpctl.cli.get as get_parser
+import gcpctl.cli.pod_exec as pod_exec_parser
+import gcpctl.cli.cluster_exec as cluster_exec_parser
 
 LOG = logging.getLogger(__name__)
 
@@ -33,6 +35,8 @@ def create_parser():
                         dest="debug", help='Turn on debug')
 
     get_parser.add_get_parser(subparsers)
+    pod_exec_parser.add_pod_exec_parser(subparsers)
+    cluster_exec_parser.add_cluster_exec_parser(subparsers)
 
     return parser
 

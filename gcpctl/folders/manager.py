@@ -24,8 +24,11 @@ class FolderManager():
 
     def list(self):
         """List folders."""
-        request = resourcemanager_v3.ListFoldersRequest(
-            parent=f"folders/{self.folder_id}")
+        if self.folder_id:
+            request = resourcemanager_v3.ListFoldersRequest(
+                parent=f"folders/{self.folder_id}")
+        else:
+            request = resourcemanager_v3.ListFoldersRequest()
         for folder in self.client.list_folders(request=request):
             print(folder.display_name)
 

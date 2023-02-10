@@ -22,7 +22,7 @@ LOG = logging.getLogger(__name__)
 
 
 def add_get_parser(subparsers):
-    """The parser for sub command 'list'."""
+    """The parser for sub command 'get'."""
     get_parser = subparsers.add_parser("get")
     get_parser.set_defaults(parser=get_parser)
     get_subparsers = get_parser.add_subparsers(dest='get_subparser')
@@ -31,7 +31,8 @@ def add_get_parser(subparsers):
     get_gke_clusters_parser = get_subparsers.add_parser("gke-clusters")
     get_gke_clusters_parser.set_defaults(
         func=get_gke_clusters_main, parser=get_gke_clusters_parser)
-    get_gke_clusters_parser.add_argument('-p', '--project', dest="project_ids")
+    get_gke_clusters_parser.add_argument('-p', '--project', dest="project_ids",
+                                         nargs='+')
     get_gke_clusters_parser.add_argument('-e', '--env-type', nargs='+',
                                          dest="env_types",
                                          help='Env name from config file')
@@ -51,8 +52,7 @@ def add_get_parser(subparsers):
     get_folders_parser.set_defaults(func=get_folders_main,
                                     parser=get_folders_parser)
     get_folders_parser.add_argument('-f', '--folder-id',
-                                    dest="folder_id", help='Folder ID',
-                                    required=True)
+                                    dest="folder_id", help='Folder ID')
 
 
 def get_gke_clusters_main(args):

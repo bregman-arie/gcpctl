@@ -19,7 +19,9 @@ import sys
 from gcpctl.utils.colors import BCOLORS
 from gcpctl.gke_clusters.cluster import GKECluster
 from gcpctl.manager import GCPManager
+from gcpctl.kubernetes.config import load_config
 from gcpctl.projects.manager import ProjectManager
+from gcpctl.utils.process import local_exec
 
 LOG = logging.getLogger(__name__)
 
@@ -27,10 +29,12 @@ LOG = logging.getLogger(__name__)
 class GKEManager(GCPManager):
     """Execute GCP GKE related operations."""
 
-    def __init__(self, project_ids=None, env_types=None) -> None:
+    def __init__(self, project_ids=None, env_types=None,
+                 clusters=None) -> None:
         self.client = container_v1.ClusterManagerClient()
         self.project_ids = project_ids
         self.env_types = env_types
+        self.clusters = clusters
         super().__init__()
         self._load_conf()
 
@@ -47,9 +51,11 @@ class GKEManager(GCPManager):
             for env_type in self.env_types:
                 folder_ids = self.config.data.get('environments').get(env_type)
                 for folder_id in folder_ids:
-                    project_ids.extend(project_manager.get_projects(folder_id))
+                    project_ids.extend(
+                        [project.display_name for project in
+                         project_manager.get_projects(folder_id)])
         if self.project_ids:
-            projects_ids.extend(self.project_ids)
+            project_ids.extend(self.project_ids)
         return project_ids
 
     def list(self) -> None:
@@ -62,8 +68,21 @@ class GKEManager(GCPManager):
                 name=cluster.name, project_id=project_id,
                 zone=cluster.zone) for cluster in response.clusters])
         LOG.info("Obtained %d GKE clusters", len(clusters))
+        print("{0: <20} {1: <30} {2: <40}".format(
+            "Cluster", "Project", "Zone"))
+        print("{0: <20} {1: <30} {2: <40}".format(
+            "=======", "=======", "===="))
         for cluster in clusters:
             print(cluster)
 
-    def create(self) -> None:
-        """Creates a new GKE cluster."""
+    def pod_exec(self, commands, pods=None, pods_regex=None) -> None:
+        """Executes command on one or more of the clusters Pods
+        in the GKE cluster"""
+        for cluster in self.clusters:
+            context = load_config(cluster)
+            namespaces = get_namespaces()
+            for namespace in namespaces:
+                pods_instances = get_pods(pods=pods, pods_regex=pods_regex,
+                                          namespace=namespace)
+                for pod in pods_instances:
+                    local_exec(f"kubectl config use-context {context}; kubectl exec {pod.metadata.name} -n {namespace.metadata.name} -- {commands}")

@@ -1,5 +1,5 @@
-"""GKE Cluster Class."""
-# Copyright 2023 Arie Bregman
+"""
+#    Copyright 2023 Arie Bregman
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
@@ -12,16 +12,12 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from dataclasses import dataclass
+"""
+from unittest import TestCase
 
 
-@dataclass
-class GKECluster():
-    """Represents GCP GKE cluster."""
+class TestFoldersManager(TestCase):
+    """Tests the FoldersManager class"""
 
-    name: str
-    project_id: str
-    zone: str
-
-    def __str__(self):
-        return (f"{self.name: <20} {self.project_id: <30} {self.zone: <40}")
+    def test_something(self):
+        """Tests ?"""

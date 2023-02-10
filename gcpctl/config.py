@@ -126,8 +126,8 @@ class Config():
         return Config.from_file(file)
 
     @staticmethod
-    def from_url(url: str,
-                 dest: str = DEFAULT_USER_PATH, overwrite_call: Callable[
+    def from_url(url: str, dest: str = DEFAULT_USER_PATH,
+                 overwrite_call: Callable[
                      [], bool] = _ask_user_for_overwrite) -> dict:
         """Builds a configuration from a definition located on a remote
         host. The definition is accessed and downloaded into the provided path.
@@ -176,3 +176,15 @@ class Config():
         LOG.info('Download completed successfully.')
 
         return Config.from_file(dest)
+
+    @staticmethod
+    def get_folder_ids(env_types):
+        """Return folder IDs of a given environment type."""
+        folder_ids = []
+        if args.env_types:
+            config = Config()
+            config.load()
+            for env_type in args.env_types:
+                folder_ids.extend(
+                    [folder for folder in config['environments'][env_type]])
+        return folder_ids
