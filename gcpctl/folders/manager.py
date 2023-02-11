@@ -12,10 +12,20 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import logging
+
 from google.cloud import resourcemanager_v3
+from google.api_core.exceptions import PermissionDenied
+
+from gcpctl.utils.colors import BCOLORS
+from gcpctl.manager import GCPManager
+from gcpctl.printer import Printer
 
 
-class FolderManager():
+LOG = logging.getLogger(__name__)
+
+
+class FolderManager(GCPManager):
     """Manages operations related to GCP folders."""
 
     def __init__(self, folder_ids=None) -> None:
@@ -24,16 +34,24 @@ class FolderManager():
 
     def list(self):
         """List folders."""
+        folders = []
         if self.folder_ids:
             for folder_id in self.folder_ids:
                 request = resourcemanager_v3.ListFoldersRequest(
                     parent=f"folders/{folder_id}")
-                for folder in self.client.list_folders(request=request):
-                    print(folder.display_name)
+                folders = self.client.list_folders(request=request)
+                Printer.print_headers(["Folder", "Parent"])
+                for folder in folders:
+                    Printer.print_row([folder.display_name, folder.parent])
         else:
             request = resourcemanager_v3.ListFoldersRequest()
-            for folder in self.client.list_folders(request=request):
-                print(folder.display_name)
+            try:
+                for folder in self.client.list_folders(request=request):
+                    print(folder.display_name)
+            except PermissionDenied:
+                LOG.error("%sNo permissions to access the root of the \
+organization.\nConsider accessing a specific folder with -f FOLDER.%s",
+                          BCOLORS['RED'], BCOLORS['ENDC'])
 
     def create(self):
         """Creates new folder."""
