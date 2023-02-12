@@ -27,7 +27,7 @@ class Printer():
         print(format_str.format(*[sub_header for _ in headers]))
 
     @staticmethod
-    def print_row(items, fill=30):
+    def get_row_str(items, fill=30):
         fill_args = [fill for _ in items]
         format_str = " ".join("{: <" + str(f) + "}" for f in fill_args)
-        print(format_str.format(*items))
+        return format_str.format(*items)

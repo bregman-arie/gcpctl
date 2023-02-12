@@ -22,6 +22,7 @@ from gcpctl.manager import GCPManager
 from gcpctl.kubernetes.config import load_config
 from gcpctl.projects.manager import ProjectManager
 from gcpctl.utils.process import local_exec
+from gcpctl.printer import Printer
 
 LOG = logging.getLogger(__name__)
 
@@ -57,10 +58,7 @@ class GKEManager(GCPManager):
                 name=cluster.name, project_id=project_id,
                 zone=cluster.zone) for cluster in response.clusters])
         LOG.info("Obtained %d GKE clusters", len(clusters))
-        print("{0: <20} {1: <30} {2: <40}".format(
-            "Cluster", "Project", "Zone"))
-        print("{0: <20} {1: <30} {2: <40}".format(
-            "=======", "=======", "===="))
+        Printer.print_headers(["Cluster", "Project", "Zone"])
         for cluster in clusters:
             print(cluster)
 

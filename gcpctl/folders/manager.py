@@ -42,7 +42,8 @@ class FolderManager(GCPManager):
                 folders = self.client.list_folders(request=request)
                 Printer.print_headers(["Folder", "Parent"])
                 for folder in folders:
-                    Printer.print_row([folder.display_name, folder.parent])
+                    print(Printer.get_row_str([folder.display_name,
+                                               folder.parent]))
         else:
             request = resourcemanager_v3.ListFoldersRequest()
             try:

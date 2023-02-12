@@ -14,6 +14,8 @@
 #    under the License.
 from dataclasses import dataclass
 
+from gcpctl.printer import Printer
+
 
 @dataclass
 class GKECluster():
@@ -24,4 +26,4 @@ class GKECluster():
     zone: str
 
     def __str__(self):
-        return (f"{self.name: <20} {self.project_id: <30} {self.zone: <40}")
+        return Printer.get_row_str([self.name, self.project_id, self.zone])

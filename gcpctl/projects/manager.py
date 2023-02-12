@@ -54,4 +54,5 @@ class ProjectManager(GCPManager):
         projects = self.get_projects()
         Printer.print_headers(["Project", "Parent", "Project ID"])
         for project in projects:
-            Printer.print_row([project.display_name, project.parent, project.project_id])
+            print(Printer.get_row_str([project.display_name, project.parent,
+                                       project.project_id]))

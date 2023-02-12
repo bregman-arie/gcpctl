@@ -63,7 +63,8 @@ def get_gke_clusters_main(args):
     if args.env_types:
         project_manager = ProjectManager(
             folder_ids=Config.get_folder_ids(args.env_types))
-        args.project_ids.extend(project_manager.get_projects())
+        args.project_ids.extend([project.project_id for project in
+                                 project_manager.get_projects()])
     gke_manager = GKEManager(project_ids=args.project_ids)
     gke_manager.list()
 
