@@ -32,6 +32,5 @@ def add_cluster_exec_parser(subparsers):
 
 def cluster_exec_main(args):
     """Main entry for sub-command cluster-exec."""
-    gke_manager = GKEManager(project_ids=args.project_ids,
-                             env_types=args.env_types)
+    gke_manager = GKEManager(project_ids=args.project_ids)
     gke_manager.cluster_exec(commands=args.commands)

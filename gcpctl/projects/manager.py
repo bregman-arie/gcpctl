@@ -17,14 +17,13 @@ import logging
 from google.cloud import resourcemanager_v3
 from google.api_core.exceptions import PermissionDenied
 
-from gcpctl.manager import GCPManager
 from gcpctl.utils.colors import BCOLORS
 from gcpctl.printer import Printer
 
 LOG = logging.getLogger(__name__)
 
 
-class ProjectManager(GCPManager):
+class ProjectManager():
     """Manages GCP operations related to projects."""
 
     def __init__(self, folder_ids=None) -> None:

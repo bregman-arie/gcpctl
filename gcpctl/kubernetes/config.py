@@ -1,3 +1,4 @@
+"""
 # Copyright 2023 Arie Bregman
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -11,7 +12,9 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+"""
 import subprocess
+from kubernetes import config
 
 
 # TODO(bregman-arie): If possible, replace this with actual Python library
@@ -21,7 +24,6 @@ def load_config(cluster):
         context = f"gke_{cluster.project_id}_{cluster.zone}_{cluster.name}"
         print(f"Loading context: {context}")
         config.load_kube_config(context=context)
-        return context
     except config.config_exception.ConfigException:
         print(f"Couldn't load the config of {cluster.name}. \
 Running gcloud get-credentials")
@@ -29,3 +31,4 @@ Running gcloud get-credentials")
                         cluster.name, f"--project={cluster.project_id}",
                         f"--zone={cluster.zone}"],
                        capture_output=True, text=True, check=True)
+    return context

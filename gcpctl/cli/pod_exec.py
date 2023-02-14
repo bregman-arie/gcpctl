@@ -15,6 +15,7 @@
 import logging
 
 from gcpctl.config import Config
+from gcpctl.projects.manager import ProjectManager
 from gcpctl.gke_clusters.manager import GKEManager
 
 LOG = logging.getLogger(__name__)
@@ -29,14 +30,25 @@ def add_pod_exec_parser(subparsers):
                                  dest="clusters", nargs='+')
     pod_exec_parser.add_argument('-c', '--commands', '--command',
                                  dest="commands", nargs='+')
-    pod_exec_parser.add_argument('-p', '--pods', dest="pods")
+    pod_exec_parser.add_argument('-po', '--pods', dest="pods")
     pod_exec_parser.add_argument('-pr', '--pods-regex', dest="pods_regex")
+    pod_exec_parser.add_argument('-p', '--project', '--projects',
+                                 dest="project_ids", nargs='+', default=[])
+    pod_exec_parser.add_argument('-e', '--env-type', nargs='+',
+                                 dest="env_types",
+                                 help='Env names from config file')
 
 
 def pod_exec_main(args):
     """Main entry for sub-command pod-exec."""
-    folder_ids = Config.get_folder_ids(args.env_types)
-    gke_manager = GKEManager(folder_ids=folder_ids,
-                             env_types=args.env_types, clusters=args.clusters)
+    if args.env_types:
+        project_manager = ProjectManager(
+            folder_ids=Config.get_folder_ids(args.env_types))
+        args.project_ids.extend([project.project_id for project in
+                                 project_manager.get_projects()])
+    gke_manager = GKEManager()
+    for project_id in args.project_ids:
+        gke_manager.load_clusters(clusters=args.clusters,
+                                  project=project_id)
     gke_manager.pod_exec(commands=args.commands, pods=args.pods,
                          pods_regex=args.pods_regex)

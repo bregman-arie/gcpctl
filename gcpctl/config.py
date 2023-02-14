@@ -186,6 +186,5 @@ class Config():
             config.load()
             for env_type in env_types:
                 folder_ids.extend(
-                    [folder for folder in
-                     config.data.get('environments').get(env_type)])
+                    config.data.get('environments').get(env_type))
         return folder_ids

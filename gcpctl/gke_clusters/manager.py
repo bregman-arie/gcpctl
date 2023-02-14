@@ -13,27 +13,27 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import logging
-from google.cloud import container_v1
 import sys
+
+from google.cloud import container_v1
 
 from gcpctl.utils.colors import BCOLORS
 from gcpctl.gke_clusters.cluster import GKECluster
-from gcpctl.manager import GCPManager
 from gcpctl.kubernetes.config import load_config
-from gcpctl.projects.manager import ProjectManager
+from gcpctl.kubernetes.manager import KubernetesManager
 from gcpctl.utils.process import local_exec
 from gcpctl.printer import Printer
 
 LOG = logging.getLogger(__name__)
 
 
-class GKEManager(GCPManager):
+class GKEManager():
     """Execute GCP GKE related operations."""
 
     def __init__(self, project_ids=None, clusters=None) -> None:
         self.client = container_v1.ClusterManagerClient()
         self.project_ids = project_ids
-        self.clusters = clusters
+        self.clusters = clusters or []
         super().__init__()
 
     def _validate_and_get_projects(self):
@@ -62,14 +62,29 @@ class GKEManager(GCPManager):
         for cluster in clusters:
             print(cluster)
 
+    def load_clusters(self, project, clusters=None) -> None:
+        """Sets self.clusters to actual Cluster instances."""
+        parent = f"projects/{project}/locations/-"
+        response = self.client.list_clusters(parent=parent)
+        for cluster in response.cluster:
+            if not clusters or cluster.name in clusters:
+                self.clusters.append(GKECluster(cluster.name, project,
+                                                cluster.zone))
+
     def pod_exec(self, commands, pods=None, pods_regex=None) -> None:
         """Executes command on one or more of the clusters Pods
         in the GKE cluster"""
+        if not self.clusters:
+            LOG.error("%sNo clusters specified...%s\nSpecify \
+projects with clusters", BCOLORS['RED'], BCOLORS['ENDC'])
+            sys.exit(2)
+        k8s_manager = KubernetesManager()
         for cluster in self.clusters:
             context = load_config(cluster)
-            namespaces = get_namespaces()
+            namespaces = k8s_manager.get_namespaces()
             for namespace in namespaces:
-                pods_instances = get_pods(pods=pods, pods_regex=pods_regex,
-                                          namespace=namespace)
+                pods_instances = k8s_manager.get_pods(
+                    pods=pods, pods_regex=pods_regex, namespace=namespace)
                 for pod in pods_instances:
-                    local_exec(f"kubectl config use-context {context}; kubectl exec {pod.metadata.name} -n {namespace.metadata.name} -- {commands}")
+                    local_exec(f"kubectl config use-context {context}; \
+kubectl exec {pod.metadata.name} -n {namespace.metadata.name} -- {commands}")

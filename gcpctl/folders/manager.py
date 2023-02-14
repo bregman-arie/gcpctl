@@ -18,14 +18,13 @@ from google.cloud import resourcemanager_v3
 from google.api_core.exceptions import PermissionDenied
 
 from gcpctl.utils.colors import BCOLORS
-from gcpctl.manager import GCPManager
 from gcpctl.printer import Printer
 
 
 LOG = logging.getLogger(__name__)
 
 
-class FolderManager(GCPManager):
+class FolderManager():
     """Manages operations related to GCP folders."""
 
     def __init__(self, folder_ids=None) -> None:
