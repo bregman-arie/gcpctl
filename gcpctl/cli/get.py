@@ -66,7 +66,7 @@ def get_gke_clusters_main(args):
         args.project_ids.extend([project.project_id for project in
                                  project_manager.get_projects()])
     gke_manager = GKEManager(project_ids=args.project_ids)
-    gke_manager.list()
+    gke_manager.list_clusters()
 
 
 def get_projects_main(args):

@@ -48,7 +48,7 @@ class GKEManager():
             project_ids.extend(self.project_ids)
         return project_ids
 
-    def list(self) -> None:
+    def list_clusters(self) -> None:
         """List GKE clusters."""
         clusters = []
         for project_id in self._validate_and_get_projects():
@@ -66,7 +66,7 @@ class GKEManager():
         """Sets self.clusters to actual Cluster instances."""
         parent = f"projects/{project}/locations/-"
         response = self.client.list_clusters(parent=parent)
-        for cluster in response.cluster:
+        for cluster in response.clusters:
             if not clusters or cluster.name in clusters:
                 self.clusters.append(GKECluster(cluster.name, project,
                                                 cluster.zone))
