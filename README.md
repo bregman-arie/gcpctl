@@ -49,3 +49,16 @@ You can then reference those environments with some of the commands, like: `gcpc
 * List clusters from a specific env: `gcpctl get gke-clusters -e prod` (see configuration section for more info on envs)
 * Execute `kubectl get pods` on every "test" GKE cluster: `gcpctl cluster-exec --commands "kubectl get pods"`
 * Execute ls on Pods called "some-pod" in all prod clusters: `gcpctl pod-exec --pods some-pod --commands ls`
+
+## Initialize
+
+```
+go mod init github.com/bregman-arie/gcpctl
+go mod tidy
+```
+
+## Build from source
+
+```
+go build -o /usr/local/bin/gcpctl
+```

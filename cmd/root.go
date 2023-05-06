@@ -15,12 +15,17 @@
 package cmd
 
 import (
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
 const Version = "0.0.1"
-:
+
 var (
+
+	// Cobra Flags
+	VerboseFlag bool
+	DebugFlag   bool
 
 	// Root Cobra command - gcpctl
 	RootCmd = &cobra.Command{
@@ -29,13 +34,27 @@ var (
 		Short:   "Google Cloud Platform Alternative CLI",
 		PersistentPreRun: func(cob *cobra.Command, args []string) {
 		},
+		Run: func(cob *cobra.Command, args []string) {
+			logrus.Infof("Running gcpctl")
+		},
 	}
 )
+
+func initConfig() {
+	// Logging flags
+	if VerboseFlag {
+		logrus.Infof("Enabling verbose logging")
+	}
+	if DebugFlag {
+		logrus.Infof("Enabling debug logging")
+		logrus.SetLevel(logrus.DebugLevel)
+	}
+}
 
 func init() {
 	// Set up logging and anything else
 	cobra.OnInitialize(initConfig)
-:
+
 	// Set up our flags
 	RootCmd.PersistentFlags().BoolVarP(&VerboseFlag, "verbose", "v", false, "enable verbose logging")
 	RootCmd.PersistentFlags().BoolVarP(&DebugFlag, "debug", "d", false, "enable debug logging")
