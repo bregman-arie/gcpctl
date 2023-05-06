@@ -31,7 +31,7 @@ var (
 	RootCmd = &cobra.Command{
 		Use:     "gcpctl",
 		Version: Version,
-		Short:   "Google Cloud Platform Alternative CLI",
+		Short:   "Google Cloud Platform Utils",
 		PersistentPreRun: func(cob *cobra.Command, args []string) {
 		},
 		Run: func(cob *cobra.Command, args []string) {
